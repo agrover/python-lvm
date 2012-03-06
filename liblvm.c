@@ -215,7 +215,7 @@ liblvm_lvm_config_reload(lvmobject *self)
     	return NULL;
     }
 
-    return Py_BuildValue("i",rval);
+    return Py_BuildValue("i", rval);
 }
 
 
@@ -229,7 +229,7 @@ liblvm_lvm_scan(lvmobject *self)
     	return NULL;
     }
 
-    return Py_BuildValue("i",rval);
+    return Py_BuildValue("i", rval);
 }
 
 static PyObject *
@@ -245,7 +245,7 @@ liblvm_lvm_config_override(lvmobject *self, PyObject *arg)
     	PyErr_SetObject(LibLVMError,liblvm_get_last_error(self));
         return NULL;
     }
-    return Py_BuildValue("i",rval);
+    return Py_BuildValue("i", rval);
 }
 /* ----------------------------------------------------------------------
  * VG object initialization/deallocation
