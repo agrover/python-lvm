@@ -549,7 +549,7 @@ liblvm_lvm_vg_set_extent_size(vgobject *self, PyObject *args)
     uint32_t new_size;
     int rval;
 
-    if (!PyArg_ParseTuple(args, "i", &new_size)) {
+    if (!PyArg_ParseTuple(args, "l", &new_size)) {
         return NULL;
     }
 
@@ -856,7 +856,7 @@ liblvm_lvm_lv_resize(lvobject *self, PyObject *args)
     uint64_t new_size;
     int rval;
 
-    if (!PyArg_ParseTuple(args, "i", &new_size)) {
+    if (!PyArg_ParseTuple(args, "l", &new_size)) {
         return NULL;
     }
     if ((rval = lvm_lv_resize(self->lv, new_size)) == -1)
@@ -885,25 +885,25 @@ liblvm_lvm_pv_get_uuid(pvobject *self)
 static PyObject *
 liblvm_lvm_pv_get_mda_count(pvobject *self)
 {
-    return Py_BuildValue("s", lvm_pv_get_mda_count(self->pv));
+    return Py_BuildValue("l", lvm_pv_get_mda_count(self->pv));
 }
 
 static PyObject *
 liblvm_lvm_pv_get_dev_size(pvobject *self)
 {
-    return Py_BuildValue("s", lvm_pv_get_dev_size(self->pv));
+    return Py_BuildValue("l", lvm_pv_get_dev_size(self->pv));
 }
 
 static PyObject *
 liblvm_lvm_pv_get_size(pvobject *self)
 {
-    return Py_BuildValue("s", lvm_pv_get_size(self->pv));
+    return Py_BuildValue("l", lvm_pv_get_size(self->pv));
 }
 
 static PyObject *
 liblvm_lvm_pv_get_free(pvobject *self)
 {
-    return Py_BuildValue("s", lvm_pv_get_free(self->pv));
+    return Py_BuildValue("l", lvm_pv_get_free(self->pv));
 }
 
 static PyObject *
@@ -912,7 +912,7 @@ liblvm_lvm_pv_resize(pvobject *self, PyObject *args)
     uint64_t new_size;
     int rval;
 
-    if (!PyArg_ParseTuple(args, "i", &new_size)) {
+    if (!PyArg_ParseTuple(args, "l", &new_size)) {
         return NULL;
     }
     if ((rval = lvm_pv_resize(self->pv, new_size)) == -1)
