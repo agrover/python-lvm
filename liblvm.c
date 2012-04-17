@@ -1111,7 +1111,7 @@ static PyTypeObject LibLVMpvType = {
 #define PyMODINIT_FUNC void
 #endif
 PyMODINIT_FUNC
-initliblvm(void)
+initlvm(void)
 {
     PyObject *m;
 
@@ -1119,7 +1119,7 @@ initliblvm(void)
     if (PyType_Ready(&LiblvmType) < 0)
         return;
 
-    m = Py_InitModule3("liblvm", Liblvm_methods, "Liblvm module");
+    m = Py_InitModule3("lvm", Liblvm_methods, "Liblvm module");
     if (m == NULL)
         return;
 

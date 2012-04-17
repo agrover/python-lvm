@@ -1,6 +1,6 @@
 from distutils.core import setup, Extension
 
-liblvm = Extension('liblvm',
+liblvm = Extension('lvm',
                     sources = ['liblvm.c'],
                     libraries= ['lvm2app'])
 
