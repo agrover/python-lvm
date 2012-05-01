@@ -633,7 +633,7 @@ liblvm_lvm_vg_create_lv_linear(vgobject *vg, PyObject *args)
 
     lvobject *self;
 
-    if (!PyArg_ParseTuple(args, "si", &vgname, &size)) {
+    if (!PyArg_ParseTuple(args, "sl", &vgname, &size)) {
         return NULL;
     }
 
