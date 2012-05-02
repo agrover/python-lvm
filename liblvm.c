@@ -1004,24 +1004,6 @@ static PyMethodDef liblvm_pv_methods[] = {
     { NULL,             NULL}   /* sentinel */
 };
 
-static PyObject *
-liblvm_vg_getattr(vgobject *self, char *name)
-{
-    return Py_FindMethod(liblvm_vg_methods, (PyObject *)self, name);
-}
-
-static PyObject *
-liblvm_lv_getattr(vgobject *self, char *name)
-{
-    return Py_FindMethod(liblvm_lv_methods, (PyObject *)self, name);
-}
-
-static PyObject *
-liblvm_pv_getattr(vgobject *self, char *name)
-{
-    return Py_FindMethod(liblvm_pv_methods, (PyObject *)self, name);
-}
-
 static PyTypeObject LiblvmType = {
     PyObject_HEAD_INIT(&PyType_Type)
     .tp_name = "liblvm.Liblvm",
@@ -1037,24 +1019,24 @@ static PyTypeObject LibLVMvgType = {
     PyObject_HEAD_INIT(&PyType_Type)
     .tp_name = "liblvm.Liblvm_vg",
     .tp_basicsize = sizeof(vgobject),
+    .tp_methods = liblvm_vg_methods,
     .tp_dealloc = (destructor)liblvm_vg_dealloc,
-    .tp_getattr = (getattrfunc)liblvm_vg_getattr,
 };
 
 static PyTypeObject LibLVMlvType = {
     PyObject_HEAD_INIT(&PyType_Type)
     .tp_name = "liblvm.Liblvm_lv",
     .tp_basicsize = sizeof(lvobject),
+    .tp_methods = liblvm_lv_methods,
     .tp_dealloc = (destructor)liblvm_lv_dealloc,
-    .tp_getattr = (getattrfunc)liblvm_lv_getattr,
 };
 
 static PyTypeObject LibLVMpvType = {
     PyObject_HEAD_INIT(&PyType_Type)
     .tp_name = "liblvm.Liblvm_pv",
     .tp_basicsize = sizeof(pvobject),
+    .tp_methods = liblvm_pv_methods,
     .tp_dealloc = (destructor)liblvm_pv_dealloc,
-    .tp_getattr = (getattrfunc)liblvm_pv_getattr,
 };
 
 #ifndef PyMODINIT_FUNC    /* declarations for DLL import/export */
