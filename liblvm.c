@@ -111,6 +111,7 @@ liblvm_close(lvmobject *self)
         lvm_quit(self->libh);
 
     self->libh = NULL;
+
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -119,63 +120,52 @@ static PyObject *
 liblvm_lvm_list_vg_names(lvmobject *self)
 {
     struct dm_list *vgnames;
-    const char *vgname;
     struct lvm_str_list *strl;
-    PyObject * rv;
+    PyObject * pytuple;
     int i = 0;
 
-    if ((vgnames = lvm_list_vg_names(self->libh))== NULL)
-        goto error;
+    vgnames = lvm_list_vg_names(self->libh);
+    if (!vgnames) {
+        PyErr_SetObject(LibLVMError, liblvm_get_last_error(self));
+        return NULL;
+    }
 
-    if (dm_list_empty(vgnames))
-        goto error;
-
-    rv = PyTuple_New(dm_list_size(vgnames));
-    if (rv == NULL)
+    pytuple = PyTuple_New(dm_list_size(vgnames));
+    if (!pytuple)
         return NULL;
 
     dm_list_iterate_items(strl, vgnames) {
-        vgname = strl->str;
-        PyTuple_SET_ITEM(rv, i, PyString_FromString(vgname));
+        PyTuple_SET_ITEM(pytuple, i, PyString_FromString(strl->str));
         i++;
     }
 
-    return rv;
-
-error:
-    PyErr_SetObject(LibLVMError, liblvm_get_last_error(self));
-    return NULL;
+    return pytuple;
 }
 
 static PyObject *
 liblvm_lvm_list_vg_uuids(lvmobject *self)
 {
     struct dm_list *uuids;
-    const char *uuid;
     struct lvm_str_list *strl;
-    PyObject * rv;
+    PyObject * pytuple;
     int i = 0;
 
-    if ((uuids = lvm_list_vg_uuids(self->libh))== NULL)
-        goto error;
-
-    if (dm_list_empty(uuids))
-        goto error;
-
-    rv = PyTuple_New(dm_list_size(uuids));
-    if (rv == NULL)
+    uuids = lvm_list_vg_uuids(self->libh);
+    if (!uuids) {
+        PyErr_SetObject(LibLVMError, liblvm_get_last_error(self));
         return NULL;
+    }
+
+    pytuple = PyTuple_New(dm_list_size(uuids));
+    if (!pytuple)
+        return NULL;
+
     dm_list_iterate_items(strl, uuids) {
-        uuid = strl->str;
-        PyTuple_SET_ITEM(rv, i, PyString_FromString(uuid));
+        PyTuple_SET_ITEM(pytuple, i, PyString_FromString(strl->str));
         i++;
     }
 
-    return rv;
-
-error:
-    PyErr_SetObject(LibLVMError, liblvm_get_last_error(self));
-       return NULL;
+    return pytuple;
 }
 
 static PyObject *
@@ -183,6 +173,7 @@ liblvm_lvm_vgname_from_pvid(lvmobject *self, PyObject *arg)
 {
     const char *pvid;
     const char *vgname;
+
     if (!PyArg_ParseTuple(arg, "s", &pvid))
         return NULL;
 
@@ -199,6 +190,7 @@ liblvm_lvm_vgname_from_device(lvmobject *self, PyObject *arg)
 {
     const char *device;
     const char *vgname;
+
     if (!PyArg_ParseTuple(arg, "s", &device))
         return NULL;
 
@@ -220,7 +212,8 @@ liblvm_lvm_config_reload(lvmobject *self)
         return NULL;
     }
 
-    return Py_BuildValue("i", rval);
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 
 
@@ -234,7 +227,8 @@ liblvm_lvm_scan(lvmobject *self)
         return NULL;
     }
 
-    return Py_BuildValue("i", rval);
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 
 static PyObject *
@@ -250,7 +244,9 @@ liblvm_lvm_config_override(lvmobject *self, PyObject *arg)
         PyErr_SetObject(LibLVMError, liblvm_get_last_error(self));
         return NULL;
     }
-    return Py_BuildValue("i", rval);
+
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 /* ----------------------------------------------------------------------
  * VG object initialization/deallocation
@@ -327,6 +323,7 @@ liblvm_lvm_vg_close(vgobject *self)
         lvm_vg_close(self->vg);
 
     self->vg = NULL;
+
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -355,12 +352,13 @@ liblvm_lvm_vg_remove(vgobject *self)
     if (lvm_vg_write(self->vg) == -1)
         goto error;
 
-    return Py_BuildValue("i", rval);
+    self->vg = NULL;
+
+    Py_INCREF(Py_None);
+    return Py_None;
 
 error:
     PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
-    lvm_vg_close(self->vg);
-    self->vg = NULL;
     return NULL;
 }
 
@@ -380,12 +378,11 @@ liblvm_lvm_vg_extend(vgobject *self, PyObject *args)
     if (lvm_vg_write(self->vg) == -1)
         goto error;
 
-    return Py_BuildValue("i", rval);
+    Py_INCREF(Py_None);
+    return Py_None;
 
 error:
     PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
-    lvm_vg_close(self->vg);
-    self->vg = NULL;
     return NULL;
 }
 
@@ -405,12 +402,11 @@ liblvm_lvm_vg_reduce(vgobject *self, PyObject *args)
     if (lvm_vg_write(self->vg) == -1)
         goto error;
 
-    return Py_BuildValue("i", rval);
+    Py_INCREF(Py_None);
+    return Py_None;
 
 error:
     PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
-    lvm_vg_close(self->vg);
-    self->vg = NULL;
     return NULL;
 }
 
@@ -433,8 +429,6 @@ liblvm_lvm_vg_add_tag(vgobject *self, PyObject *args)
 
 error:
     PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
-    lvm_vg_close(self->vg);
-    self->vg = NULL;
     return NULL;
 }
 
@@ -454,12 +448,11 @@ liblvm_lvm_vg_remove_tag(vgobject *self, PyObject *args)
     if (lvm_vg_write(self->vg) == -1)
         goto error;
 
-    return Py_BuildValue("i", rval);
+    Py_INCREF(Py_None);
+    return Py_None;
 
 error:
     PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
-    lvm_vg_close(self->vg);
-    self->vg = NULL;
     return NULL;
 
 }
@@ -566,7 +559,8 @@ liblvm_lvm_vg_set_extent_size(vgobject *self, PyObject *args)
         return NULL;
     }
 
-    return Py_BuildValue("i", rval);
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 
 static PyObject *
@@ -574,33 +568,34 @@ liblvm_lvm_vg_list_lvs(vgobject *vg)
 {
     struct dm_list *lvs;
     struct lvm_lv_list *lvl;
-    PyObject * rv;
+    PyObject * pytuple;
     lvobject * self;
     int i = 0;
 
-    if ((lvs = lvm_vg_list_lvs(vg->vg))== NULL)
-        goto error;
+    /* unlike other LVM api calls, if there are no results, we get NULL */
+    lvs = lvm_vg_list_lvs(vg->vg);
+    if (!lvs)
+        return Py_BuildValue("()");
 
-    if (dm_list_empty(lvs))
-        goto error;
-
-    rv = PyTuple_New(dm_list_size(lvs));
-    if (rv == NULL)
+    pytuple = PyTuple_New(dm_list_size(lvs));
+    if (!pytuple)
         return NULL;
 
     dm_list_iterate_items(lvl, lvs) {
         /* Create and initialize the object */
         self = PyObject_New(lvobject, &LibLVMlvType);
+        if (!self) {
+            Py_DECREF(pytuple);
+            return NULL;
+        }
+
         self->lv = lvl->lv;
-        PyTuple_SET_ITEM(rv, i, (PyObject *) self);
+        self->lvm_obj = vg->lvm_obj;
+        PyTuple_SET_ITEM(pytuple, i, (PyObject *) self);
         i++;
     }
 
-    return rv;
-
-error:
-    PyErr_SetObject(LibLVMError, liblvm_get_last_error(vg->lvm_obj));
-    return NULL;
+    return pytuple;
 }
 
 static PyObject *
@@ -608,29 +603,25 @@ liblvm_lvm_vg_get_tags(vgobject *self)
 {
     struct dm_list *tags;
     struct lvm_str_list *strl;
-    PyObject * rv;
+    PyObject * pytuple;
     int i = 0;
 
-    if ((tags = lvm_vg_get_tags(self->vg))== NULL)
-        goto error;
+    tags = lvm_vg_get_tags(self->vg);
+    if (!tags) {
+        PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
+        return NULL;
+    }
 
-    if (dm_list_empty(tags))
-        goto error;
-
-    rv = PyTuple_New(dm_list_size(tags));
-    if (rv == NULL)
+    pytuple = PyTuple_New(dm_list_size(tags));
+    if (!pytuple)
         return NULL;
 
     dm_list_iterate_items(strl, tags) {
-        PyTuple_SET_ITEM(rv, i, PyString_FromString(strl->str));
+        PyTuple_SET_ITEM(pytuple, i, PyString_FromString(strl->str));
         i++;
     }
 
-    return rv;
-
-error:
-    PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
-    return NULL;
+    return pytuple;
 }
 
 static PyObject *
@@ -729,7 +720,8 @@ liblvm_lvm_lv_activate(lvobject *self)
         return NULL;
     }
 
-    return Py_BuildValue("i", rval);
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 
 static PyObject *
@@ -742,7 +734,8 @@ liblvm_lvm_lv_deactivate(lvobject *self)
         return NULL;
     }
 
-    return Py_BuildValue("i", rval);
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 
 static PyObject *
@@ -755,20 +748,14 @@ liblvm_lvm_vg_remove_lv(lvobject *self)
         return NULL;
     }
 
-    return Py_BuildValue("i", rval);
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 
 static PyObject *
 liblvm_lvm_lv_get_size(lvobject *self)
 {
-    int rval;
-
-    if ((rval = lvm_lv_get_size(self->lv)) == -1) {
-        PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
-        return NULL;
-    }
-
-    return Py_BuildValue("i", rval);
+    return Py_BuildValue("l", lvm_lv_get_size(self->lv));
 }
 
 static PyObject *
@@ -802,14 +789,14 @@ liblvm_lvm_lv_add_tag(lvobject *self, PyObject *args)
     if (!PyArg_ParseTuple(args, "s", &tag)) {
         return NULL;
     }
-    if ((rval = lvm_lv_add_tag(self->lv, tag)) == -1)
-        goto error;
 
-    return Py_BuildValue("i", rval);
+    if ((rval = lvm_lv_add_tag(self->lv, tag)) == -1) {
+        PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
+        return NULL;
+    }
 
-error:
-    PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
-    return NULL;
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 
 static PyObject *
@@ -821,14 +808,14 @@ liblvm_lvm_lv_remove_tag(lvobject *self, PyObject *args)
     if (!PyArg_ParseTuple(args, "s", &tag)) {
         return NULL;
     }
-    if ((rval = lvm_lv_remove_tag(self->lv, tag)) == -1)
-        goto error;
 
-    return Py_BuildValue("i", rval);
+    if ((rval = lvm_lv_remove_tag(self->lv, tag)) == -1) {
+        PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
+        return NULL;
+    }
 
-error:
-    PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
-    return NULL;
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 
 static PyObject *
@@ -836,29 +823,25 @@ liblvm_lvm_lv_get_tags(lvobject *self)
 {
     struct dm_list *tags;
     struct lvm_str_list *strl;
-    PyObject * rv;
+    PyObject * pytuple;
     int i = 0;
 
-    if ((tags = lvm_lv_get_tags(self->lv))== NULL)
-        goto error;
+    tags = lvm_lv_get_tags(self->lv);
+    if (!tags) {
+        PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
+        return NULL;
+    }
 
-    if (dm_list_empty(tags))
-        goto error;
-
-    rv = PyTuple_New(dm_list_size(tags));
-    if (rv == NULL)
+    pytuple = PyTuple_New(dm_list_size(tags));
+    if (!pytuple)
         return NULL;
 
     dm_list_iterate_items(strl, tags) {
-        PyTuple_SET_ITEM(rv, i, PyString_FromString(strl->str));
+        PyTuple_SET_ITEM(pytuple, i, PyString_FromString(strl->str));
         i++;
     }
 
-    return rv;
-
-error:
-    PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
-    return NULL;
+    return pytuple;
 }
 
 static PyObject *
@@ -870,15 +853,16 @@ liblvm_lvm_lv_resize(lvobject *self, PyObject *args)
     if (!PyArg_ParseTuple(args, "l", &new_size)) {
         return NULL;
     }
-    if ((rval = lvm_lv_resize(self->lv, new_size)) == -1)
-        goto error;
 
-    return Py_BuildValue("i", rval);
+    if ((rval = lvm_lv_resize(self->lv, new_size)) == -1) {
+        PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
+        return NULL;
+    }
 
-error:
-    PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
-    return NULL;
+    Py_INCREF(Py_None);
+    return Py_None;
 }
+
 /* PV Methods */
 
 static PyObject *
@@ -926,15 +910,16 @@ liblvm_lvm_pv_resize(pvobject *self, PyObject *args)
     if (!PyArg_ParseTuple(args, "l", &new_size)) {
         return NULL;
     }
-    if ((rval = lvm_pv_resize(self->pv, new_size)) == -1)
-        goto error;
 
-    return Py_BuildValue("i", rval);
+    if ((rval = lvm_pv_resize(self->pv, new_size)) == -1) {
+        PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
+        return NULL;
+    }
 
-error:
-    PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
-    return NULL;
+    Py_INCREF(Py_None);
+    return Py_None;
 }
+
 /* ----------------------------------------------------------------------
  * Method tables and other bureaucracy
  */
