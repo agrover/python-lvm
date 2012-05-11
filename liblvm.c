@@ -28,16 +28,19 @@ typedef struct {
 typedef struct {
     PyObject_HEAD
     vg_t      vg;                    /* vg handle */
+    lvmobject *lvm_obj;
 } vgobject;
 
 typedef struct {
     PyObject_HEAD
     lv_t      lv;                    /* lv handle */
+    lvmobject *lvm_obj;
 } lvobject;
 
 typedef struct {
     PyObject_HEAD
     pv_t      pv;                    /* pv handle */
+    lvmobject *lvm_obj;
 } pvobject;
 
 static PyTypeObject LibLVMvgType;
@@ -140,7 +143,7 @@ liblvm_lvm_list_vg_names(lvmobject *self)
     return rv;
 
 error:
-    PyErr_SetObject(LibLVMError,liblvm_get_last_error(self));
+    PyErr_SetObject(LibLVMError, liblvm_get_last_error(self));
     return NULL;
 }
 
@@ -171,7 +174,7 @@ liblvm_lvm_list_vg_uuids(lvmobject *self)
     return rv;
 
 error:
-    PyErr_SetObject(LibLVMError,liblvm_get_last_error(self));
+    PyErr_SetObject(LibLVMError, liblvm_get_last_error(self));
        return NULL;
 }
 
@@ -184,7 +187,7 @@ liblvm_lvm_vgname_from_pvid(lvmobject *self, PyObject *arg)
         return NULL;
 
     if((vgname = lvm_vgname_from_pvid(self->libh, pvid)) == NULL) {
-        PyErr_SetObject(LibLVMError,liblvm_get_last_error(self));
+        PyErr_SetObject(LibLVMError, liblvm_get_last_error(self));
         return NULL;
     }
 
@@ -200,7 +203,7 @@ liblvm_lvm_vgname_from_device(lvmobject *self, PyObject *arg)
         return NULL;
 
     if((vgname = lvm_vgname_from_device(self->libh, device)) == NULL) {
-        PyErr_SetObject(LibLVMError,liblvm_get_last_error(self));
+        PyErr_SetObject(LibLVMError, liblvm_get_last_error(self));
         return NULL;
     }
 
@@ -213,7 +216,7 @@ liblvm_lvm_config_reload(lvmobject *self)
     int rval;
 
     if((rval = lvm_config_reload(self->libh)) == -1) {
-        PyErr_SetObject(LibLVMError,liblvm_get_last_error(self));
+        PyErr_SetObject(LibLVMError, liblvm_get_last_error(self));
         return NULL;
     }
 
@@ -227,7 +230,7 @@ liblvm_lvm_scan(lvmobject *self)
     int rval;
 
     if((rval = lvm_scan(self->libh)) == -1) {
-        PyErr_SetObject(LibLVMError,liblvm_get_last_error(self));
+        PyErr_SetObject(LibLVMError, liblvm_get_last_error(self));
         return NULL;
     }
 
@@ -244,7 +247,7 @@ liblvm_lvm_config_override(lvmobject *self, PyObject *arg)
        return NULL;
 
     if ((rval = lvm_config_override(self->libh, config)) == -1) {
-        PyErr_SetObject(LibLVMError,liblvm_get_last_error(self));
+        PyErr_SetObject(LibLVMError, liblvm_get_last_error(self));
         return NULL;
     }
     return Py_BuildValue("i", rval);
@@ -274,7 +277,7 @@ liblvm_lvm_vg_open(lvmobject *lvm, PyObject *args)
 
     if ((self->vg = lvm_vg_open(lvm->libh, vgname, mode, 0))== NULL) {
         Py_DECREF(self);
-        PyErr_SetObject(LibLVMError,liblvm_get_last_error(lvm));
+        PyErr_SetObject(LibLVMError, liblvm_get_last_error(lvm));
         return NULL;
     }
 
@@ -297,9 +300,10 @@ liblvm_lvm_vg_create(lvmobject *lvm, PyObject *args)
 
     if ((self->vg = lvm_vg_create(lvm->libh, vgname))== NULL) {
         Py_DECREF(self);
-        PyErr_SetObject(LibLVMError,liblvm_get_last_error(lvm));
+        PyErr_SetObject(LibLVMError, liblvm_get_last_error(lvm));
         return NULL;
     }
+    self->lvm_obj = lvm;
 
     return (PyObject *)self;
 }
@@ -354,7 +358,7 @@ liblvm_lvm_vg_remove(vgobject *self)
     return Py_BuildValue("i", rval);
 
 error:
-    PyErr_SetObject(LibLVMError,liblvm_get_last_error((lvmobject *)self));
+    PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
     lvm_vg_close(self->vg);
     self->vg = NULL;
     return NULL;
@@ -379,7 +383,7 @@ liblvm_lvm_vg_extend(vgobject *self, PyObject *args)
     return Py_BuildValue("i", rval);
 
 error:
-    PyErr_SetObject(LibLVMError,liblvm_get_last_error((lvmobject *)self));
+    PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
     lvm_vg_close(self->vg);
     self->vg = NULL;
     return NULL;
@@ -404,7 +408,7 @@ liblvm_lvm_vg_reduce(vgobject *self, PyObject *args)
     return Py_BuildValue("i", rval);
 
 error:
-    PyErr_SetObject(LibLVMError,liblvm_get_last_error((lvmobject *) self));
+    PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
     lvm_vg_close(self->vg);
     self->vg = NULL;
     return NULL;
@@ -428,7 +432,7 @@ liblvm_lvm_vg_add_tag(vgobject *self, PyObject *args)
     return Py_BuildValue("i", rval);
 
 error:
-    PyErr_SetObject(LibLVMError,liblvm_get_last_error((lvmobject *) self));
+    PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
     lvm_vg_close(self->vg);
     self->vg = NULL;
     return NULL;
@@ -453,7 +457,7 @@ liblvm_lvm_vg_remove_tag(vgobject *self, PyObject *args)
     return Py_BuildValue("i", rval);
 
 error:
-    PyErr_SetObject(LibLVMError,liblvm_get_last_error((lvmobject *)self));
+    PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
     lvm_vg_close(self->vg);
     self->vg = NULL;
     return NULL;
@@ -558,7 +562,7 @@ liblvm_lvm_vg_set_extent_size(vgobject *self, PyObject *args)
     }
 
     if ((rval = lvm_vg_set_extent_size(self->vg, new_size)) == -1) {
-        PyErr_SetObject(LibLVMError,liblvm_get_last_error((lvmobject *)self));
+        PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
         return NULL;
     }
 
@@ -595,7 +599,7 @@ liblvm_lvm_vg_list_lvs(vgobject *vg)
     return rv;
 
 error:
-    PyErr_SetObject(LibLVMError,liblvm_get_last_error((lvmobject *)vg));
+    PyErr_SetObject(LibLVMError, liblvm_get_last_error(vg->lvm_obj));
     return NULL;
 }
 
@@ -625,7 +629,7 @@ liblvm_lvm_vg_get_tags(vgobject *self)
     return rv;
 
 error:
-    PyErr_SetObject(LibLVMError,liblvm_get_last_error((lvmobject *)self));
+    PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
     return NULL;
 }
 
@@ -646,9 +650,10 @@ liblvm_lvm_vg_create_lv_linear(vgobject *vg, PyObject *args)
 
     if ((self->lv = lvm_vg_create_lv_linear(vg->vg, vgname, size))== NULL) {
         Py_DECREF(self);
-        PyErr_SetObject(LibLVMError,liblvm_get_last_error((lvmobject *)vg));
+        PyErr_SetObject(LibLVMError, liblvm_get_last_error(vg->lvm_obj));
         return NULL;
     }
+    self->lvm_obj = vg->lvm_obj;
 
     return (PyObject *)self;
 }
@@ -686,6 +691,7 @@ liblvm_lvm_vg_list_pvs(vgobject *vg)
         }
 
         self->pv = pvl->pv;
+        self->lvm_obj = vg->lvm_obj;
         PyTuple_SET_ITEM(pytuple, i, (PyObject *) self);
         i++;
     }
@@ -719,7 +725,7 @@ liblvm_lvm_lv_activate(lvobject *self)
     int rval;
 
     if ((rval = lvm_lv_activate(self->lv)) == -1) {
-        PyErr_SetObject(LibLVMError,liblvm_get_last_error((lvmobject *)self));
+        PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
         return NULL;
     }
 
@@ -732,7 +738,7 @@ liblvm_lvm_lv_deactivate(lvobject *self)
     int rval;
 
     if ((rval = lvm_lv_deactivate(self->lv)) == -1) {
-        PyErr_SetObject(LibLVMError,liblvm_get_last_error((lvmobject *)self));
+        PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
         return NULL;
     }
 
@@ -745,7 +751,7 @@ liblvm_lvm_vg_remove_lv(lvobject *self)
     int rval;
 
     if ((rval = lvm_vg_remove_lv(self->lv)) == -1) {
-        PyErr_SetObject(LibLVMError,liblvm_get_last_error((lvmobject *)self));
+        PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
         return NULL;
     }
 
@@ -758,7 +764,7 @@ liblvm_lvm_lv_get_size(lvobject *self)
     int rval;
 
     if ((rval = lvm_lv_get_size(self->lv)) == -1) {
-        PyErr_SetObject(LibLVMError,liblvm_get_last_error((lvmobject *)self));
+        PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
         return NULL;
     }
 
@@ -802,7 +808,7 @@ liblvm_lvm_lv_add_tag(lvobject *self, PyObject *args)
     return Py_BuildValue("i", rval);
 
 error:
-    PyErr_SetObject(LibLVMError,liblvm_get_last_error((lvmobject *) self));
+    PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
     return NULL;
 }
 
@@ -821,7 +827,7 @@ liblvm_lvm_lv_remove_tag(lvobject *self, PyObject *args)
     return Py_BuildValue("i", rval);
 
 error:
-    PyErr_SetObject(LibLVMError,liblvm_get_last_error((lvmobject *) self));
+    PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
     return NULL;
 }
 
@@ -851,7 +857,7 @@ liblvm_lvm_lv_get_tags(lvobject *self)
     return rv;
 
 error:
-    PyErr_SetObject(LibLVMError,liblvm_get_last_error((lvmobject *)self));
+    PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
     return NULL;
 }
 
@@ -870,7 +876,7 @@ liblvm_lvm_lv_resize(lvobject *self, PyObject *args)
     return Py_BuildValue("i", rval);
 
 error:
-    PyErr_SetObject(LibLVMError,liblvm_get_last_error((lvmobject *) self));
+    PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
     return NULL;
 }
 /* PV Methods */
@@ -926,7 +932,7 @@ liblvm_lvm_pv_resize(pvobject *self, PyObject *args)
     return Py_BuildValue("i", rval);
 
 error:
-    PyErr_SetObject(LibLVMError,liblvm_get_last_error((lvmobject *) self));
+    PyErr_SetObject(LibLVMError, liblvm_get_last_error(self->lvm_obj));
     return NULL;
 }
 /* ----------------------------------------------------------------------
