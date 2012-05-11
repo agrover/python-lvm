@@ -664,33 +664,33 @@ liblvm_lvm_vg_list_pvs(vgobject *vg)
 {
     struct dm_list *pvs;
     struct lvm_pv_list *pvl;
-    PyObject * rv;
+    PyObject * pytuple;
     pvobject * self;
     int i = 0;
 
-    if ((pvs = lvm_vg_list_pvs(vg->vg))== NULL)
-        goto error;
+    /* unlike other LVM api calls, if there are no results, we get NULL */
+    pvs = lvm_vg_list_pvs(vg->vg);
+    if (!pvs)
+        return Py_BuildValue("()");
 
-    if (dm_list_empty(pvs))
-        goto error;
-
-    rv = PyTuple_New(dm_list_size(pvs));
-    if (rv == NULL)
+    pytuple = PyTuple_New(dm_list_size(pvs));
+    if (!pytuple)
         return NULL;
 
     dm_list_iterate_items(pvl, pvs) {
         /* Create and initialize the object */
         self = PyObject_New(pvobject, &LibLVMpvType);
+        if (!self) {
+            Py_DECREF(pytuple);
+            return NULL;
+        }
+
         self->pv = pvl->pv;
-        PyTuple_SET_ITEM(rv, i, (PyObject *) self);
+        PyTuple_SET_ITEM(pytuple, i, (PyObject *) self);
         i++;
     }
 
-    return rv;
-
-error:
-    PyErr_SetObject(LibLVMError,liblvm_get_last_error((lvmobject *)vg));
-    return NULL;
+    return pytuple;
 }
 
 static void
