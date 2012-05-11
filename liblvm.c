@@ -457,7 +457,7 @@ error:
 }
 
 static PyObject *
-liblvm_lvm_vg_is_clustred(vgobject *self)
+liblvm_lvm_vg_is_clustered(vgobject *self)
 {
     PyObject *rval;
 
@@ -956,7 +956,7 @@ static PyMethodDef liblvm_vg_methods[] = {
     { "addTag",          (PyCFunction)liblvm_lvm_vg_add_tag, METH_VARARGS },
     { "removeTag",          (PyCFunction)liblvm_lvm_vg_remove_tag, METH_VARARGS },
     { "setExtentSize",          (PyCFunction)liblvm_lvm_vg_set_extent_size, METH_VARARGS },
-    { "isClustred",          (PyCFunction)liblvm_lvm_vg_is_clustred, METH_NOARGS },
+    { "isClustered",          (PyCFunction)liblvm_lvm_vg_is_clustered, METH_NOARGS },
     { "isExported",          (PyCFunction)liblvm_lvm_vg_is_exported, METH_NOARGS },
     { "isPartial",          (PyCFunction)liblvm_lvm_vg_is_partial, METH_NOARGS },
     { "getSeqno",          (PyCFunction)liblvm_lvm_vg_get_seqno, METH_NOARGS },
