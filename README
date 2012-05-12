@@ -2,6 +2,6 @@ This is a repo of Lars Sjostrom's python liblvm bindings, which I got from here:
 
 http://www.redhat.com/archives/lvm-devel/2011-January/msg00138.html
 
-Code condition: pre-alpha.
+Code condition: beta.
 
 to build, type 'python setup.py build'.
