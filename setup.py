@@ -5,7 +5,7 @@ liblvm = Extension('lvm',
                     libraries= ['lvm2app'])
 
 setup (name = 'lvm',
-       version = '1.1.1',
+       version = '1.2',
        description = 'Python binding for liblvm2',
        maintainer='Andy Grover',
        maintainer_email='andy@groveronline.com',
