@@ -1099,6 +1099,7 @@ static PyTypeObject LiblvmType = {
     PyObject_HEAD_INIT(&PyType_Type)
     .tp_name = "liblvm.Liblvm",
     .tp_basicsize = sizeof(lvmobject),
+    .tp_new = PyType_GenericNew,
     .tp_dealloc = (destructor)liblvm_dealloc,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
     .tp_doc = "Liblvm objects",
@@ -1110,36 +1111,47 @@ static PyTypeObject LibLVMvgType = {
     PyObject_HEAD_INIT(&PyType_Type)
     .tp_name = "liblvm.Liblvm_vg",
     .tp_basicsize = sizeof(vgobject),
-    .tp_methods = liblvm_vg_methods,
+    .tp_new = PyType_GenericNew,
     .tp_dealloc = (destructor)liblvm_vg_dealloc,
+    .tp_flags = Py_TPFLAGS_DEFAULT,
+    .tp_doc = "LVM Volume Group object",
+    .tp_methods = liblvm_vg_methods,
 };
 
 static PyTypeObject LibLVMlvType = {
     PyObject_HEAD_INIT(&PyType_Type)
     .tp_name = "liblvm.Liblvm_lv",
     .tp_basicsize = sizeof(lvobject),
-    .tp_methods = liblvm_lv_methods,
+    .tp_new = PyType_GenericNew,
     .tp_dealloc = (destructor)liblvm_lv_dealloc,
+    .tp_flags = Py_TPFLAGS_DEFAULT,
+    .tp_doc = "LVM Logical Volume object",
+    .tp_methods = liblvm_lv_methods,
 };
 
 static PyTypeObject LibLVMpvType = {
     PyObject_HEAD_INIT(&PyType_Type)
     .tp_name = "liblvm.Liblvm_pv",
     .tp_basicsize = sizeof(pvobject),
-    .tp_methods = liblvm_pv_methods,
+    .tp_new = PyType_GenericNew,
     .tp_dealloc = (destructor)liblvm_pv_dealloc,
+    .tp_flags = Py_TPFLAGS_DEFAULT,
+    .tp_doc = "LVM Physical Volume object",
+    .tp_methods = liblvm_pv_methods,
 };
 
-#ifndef PyMODINIT_FUNC    /* declarations for DLL import/export */
-#define PyMODINIT_FUNC void
-#endif
 PyMODINIT_FUNC
 initlvm(void)
 {
     PyObject *m;
 
-    LiblvmType.tp_new = PyType_GenericNew;
     if (PyType_Ready(&LiblvmType) < 0)
+        return;
+    if (PyType_Ready(&LibLVMvgType) < 0)
+        return;
+    if (PyType_Ready(&LibLVMlvType) < 0)
+        return;
+    if (PyType_Ready(&LibLVMpvType) < 0)
         return;
 
     m = Py_InitModule3("lvm", Liblvm_methods, "Liblvm module");
