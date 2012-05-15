@@ -277,8 +277,8 @@ liblvm_lvm_vg_open(lvmobject *lvm, PyObject *args)
         return NULL;
 
     if ((self->vg = lvm_vg_open(lvm->libh, vgname, mode, 0))== NULL) {
-        Py_DECREF(self);
         PyErr_SetObject(LibLVMError, liblvm_get_last_error(lvm));
+        Py_DECREF(self);
         return NULL;
     }
 
@@ -300,8 +300,8 @@ liblvm_lvm_vg_create(lvmobject *lvm, PyObject *args)
         return NULL;
 
     if ((self->vg = lvm_vg_create(lvm->libh, vgname))== NULL) {
-        Py_DECREF(self);
         PyErr_SetObject(LibLVMError, liblvm_get_last_error(lvm));
+        Py_DECREF(self);
         return NULL;
     }
     self->lvm_obj = lvm;
@@ -698,8 +698,8 @@ liblvm_lvm_vg_create_lv_linear(vgobject *vg, PyObject *args)
         return NULL;
 
     if ((self->lv = lvm_vg_create_lv_linear(vg->vg, vgname, size))== NULL) {
-        Py_DECREF(self);
         PyErr_SetObject(LibLVMError, liblvm_get_last_error(vg->lvm_obj));
+        Py_DECREF(self);
         return NULL;
     }
     self->lvm_obj = vg->lvm_obj;
