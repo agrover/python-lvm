@@ -281,6 +281,7 @@ liblvm_lvm_vg_open(lvmobject *lvm, PyObject *args)
         Py_DECREF(self);
         return NULL;
     }
+    self->lvm_obj = lvm;
 
     return (PyObject *)self;
 }
