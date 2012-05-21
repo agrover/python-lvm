@@ -87,10 +87,20 @@ liblvm_dealloc(lvmobject *self)
     PyObject_Del(self);
 }
 
+#define LVM_VALID(lvmobject) \
+    do {                   \
+    if (!lvmobject->libh) { \
+        PyErr_SetString(PyExc_UnboundLocalError, "LVM object invalid"); \
+        return NULL; \
+        } \
+    } while (0)
+
 static PyObject *
 liblvm_get_last_error(lvmobject *self)
 {
     PyObject *info;
+
+    LVM_VALID(self);
 
     if((info = PyTuple_New(2)) == NULL)
         return NULL;
@@ -104,6 +114,8 @@ liblvm_get_last_error(lvmobject *self)
 static PyObject *
 liblvm_library_get_version(lvmobject *self)
 {
+    LVM_VALID(self);
+
     return Py_BuildValue("s", lvm_library_get_version());
 }
 
@@ -111,6 +123,8 @@ liblvm_library_get_version(lvmobject *self)
 static PyObject *
 liblvm_close(lvmobject *self)
 {
+    LVM_VALID(self);
+
     /* if already closed, don't reclose it */
     if (self->libh != NULL)
         lvm_quit(self->libh);
@@ -128,6 +142,8 @@ liblvm_lvm_list_vg_names(lvmobject *self)
     struct lvm_str_list *strl;
     PyObject * pytuple;
     int i = 0;
+
+    LVM_VALID(self);
 
     vgnames = lvm_list_vg_names(self->libh);
     if (!vgnames) {
@@ -155,6 +171,8 @@ liblvm_lvm_list_vg_uuids(lvmobject *self)
     PyObject * pytuple;
     int i = 0;
 
+    LVM_VALID(self);
+
     uuids = lvm_list_vg_uuids(self->libh);
     if (!uuids) {
         PyErr_SetObject(LibLVMError, liblvm_get_last_error(self));
@@ -179,6 +197,8 @@ liblvm_lvm_vgname_from_pvid(lvmobject *self, PyObject *arg)
     const char *pvid;
     const char *vgname;
 
+    LVM_VALID(self);
+
     if (!PyArg_ParseTuple(arg, "s", &pvid))
         return NULL;
 
@@ -196,6 +216,8 @@ liblvm_lvm_vgname_from_device(lvmobject *self, PyObject *arg)
     const char *device;
     const char *vgname;
 
+    LVM_VALID(self);
+
     if (!PyArg_ParseTuple(arg, "s", &device))
         return NULL;
 
@@ -212,6 +234,8 @@ liblvm_lvm_config_reload(lvmobject *self)
 {
     int rval;
 
+    LVM_VALID(self);
+
     if((rval = lvm_config_reload(self->libh)) == -1) {
         PyErr_SetObject(LibLVMError, liblvm_get_last_error(self));
         return NULL;
@@ -227,6 +251,8 @@ liblvm_lvm_scan(lvmobject *self)
 {
     int rval;
 
+    LVM_VALID(self);
+
     if((rval = lvm_scan(self->libh)) == -1) {
         PyErr_SetObject(LibLVMError, liblvm_get_last_error(self));
         return NULL;
@@ -241,6 +267,8 @@ liblvm_lvm_config_override(lvmobject *self, PyObject *arg)
 {
     const char *config;
     int rval;
+
+    LVM_VALID(self);
 
     if (!PyArg_ParseTuple(arg, "s", &config))
        return NULL;
@@ -266,6 +294,8 @@ liblvm_lvm_vg_open(lvmobject *lvm, PyObject *args)
 
     vgobject *self;
 
+    LVM_VALID(lvm);
+
     if (!PyArg_ParseTuple(args, "s|s", &vgname, &mode)) {
         return NULL;
     }
@@ -290,8 +320,9 @@ static PyObject *
 liblvm_lvm_vg_create(lvmobject *lvm, PyObject *args)
 {
     const char *vgname;
-
     vgobject *self;
+
+    LVM_VALID(lvm);
 
     if (!PyArg_ParseTuple(args, "s", &vgname)) {
         return NULL;
