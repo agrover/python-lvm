@@ -4,4 +4,6 @@ http://www.redhat.com/archives/lvm-devel/2011-January/msg00138.html
 
 Code condition: beta.
 
+Minimum LVM version: 2.02.95
+
 to build, type 'python setup.py build'.
