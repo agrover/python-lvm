@@ -148,6 +148,7 @@ liblvm_lvm_list_vg_uuids(void)
 	return pytuple;
 }
 
+#if 0 /* waiting until supported */
 static PyObject *
 liblvm_lvm_percent_to_float(PyObject *arg)
 {
@@ -162,6 +163,7 @@ liblvm_lvm_percent_to_float(PyObject *arg)
 	converted = lvm_percent_to_float(percent);
 	return Py_BuildValue("d", converted);
 }
+#endif
 
 static PyObject *
 liblvm_lvm_vgname_from_pvid(PyObject *self, PyObject *arg)
@@ -1452,7 +1454,9 @@ static PyMethodDef Liblvm_methods[] = {
 	{ "scan",		(PyCFunction)liblvm_lvm_scan, METH_NOARGS },
 	{ "listVgNames",	(PyCFunction)liblvm_lvm_list_vg_names, METH_NOARGS },
 	{ "listVgUuids",	(PyCFunction)liblvm_lvm_list_vg_uuids, METH_NOARGS },
+#if 0
 	{ "percentToFloat",	(PyCFunction)liblvm_lvm_percent_to_float, METH_VARARGS },
+#endif
 	{ "vgNameFromPvid",	(PyCFunction)liblvm_lvm_vgname_from_pvid, METH_VARARGS },
 	{ "vgNameFromDevice",	(PyCFunction)liblvm_lvm_vgname_from_device, METH_VARARGS },
 	{ NULL,	     NULL}	   /* sentinel */
