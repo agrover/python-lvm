@@ -1200,6 +1200,7 @@ liblvm_lvm_lv_get_tags(lvobject *self)
 	return pytuple;
 }
 
+#if 0 /* until minimum version >= 2.2.98 */
 static PyObject *
 liblvm_lvm_lv_rename(lvobject *self, PyObject *args)
 {
@@ -1219,6 +1220,7 @@ liblvm_lvm_lv_rename(lvobject *self, PyObject *args)
 	Py_INCREF(Py_None);
 	return Py_None;
 }
+#endif
 
 static PyObject *
 liblvm_lvm_lv_resize(lvobject *self, PyObject *args)
@@ -1506,7 +1508,9 @@ static PyMethodDef liblvm_lv_methods[] = {
 	{ "addTag",		(PyCFunction)liblvm_lvm_lv_add_tag, METH_VARARGS },
 	{ "removeTag",		(PyCFunction)liblvm_lvm_lv_remove_tag, METH_VARARGS },
 	{ "getTags",		(PyCFunction)liblvm_lvm_lv_get_tags, METH_NOARGS },
+#if 0
 	{ "rename",		(PyCFunction)liblvm_lvm_lv_rename, METH_VARARGS },
+#endif
 	{ "resize",		(PyCFunction)liblvm_lvm_lv_resize, METH_VARARGS },
 	{ "listLVsegs",		(PyCFunction)liblvm_lvm_lv_list_lvsegs, METH_NOARGS },
 	{ NULL,	     NULL}   /* sentinel */
