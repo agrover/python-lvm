@@ -943,7 +943,7 @@ liblvm_lvm_lv_from_N(vgobject *self, PyObject *arg, lv_fetch_by_N method)
 	lv_t lv = NULL;
 
 	VG_VALID(self);
-	
+
 	if (!PyArg_ParseTuple(arg, "s", &id))
 		return NULL;
 
