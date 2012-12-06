@@ -566,7 +566,7 @@ liblvm_lvm_vg_get_seqno(vgobject *self)
 {
 	VG_VALID(self);
 
-	return Py_BuildValue("l", lvm_vg_get_seqno(self->vg));
+	return Py_BuildValue("K", (unsigned long long)lvm_vg_get_seqno(self->vg));
 }
 
 static PyObject *
@@ -574,7 +574,7 @@ liblvm_lvm_vg_get_size(vgobject *self)
 {
 	VG_VALID(self);
 
-	return Py_BuildValue("l", lvm_vg_get_size(self->vg));
+	return Py_BuildValue("K", (unsigned long long)lvm_vg_get_size(self->vg));
 }
 
 static PyObject *
@@ -582,7 +582,7 @@ liblvm_lvm_vg_get_free_size(vgobject *self)
 {
 	VG_VALID(self);
 
-	return Py_BuildValue("l", lvm_vg_get_free_size(self->vg));
+	return Py_BuildValue("K", (unsigned long long)lvm_vg_get_free_size(self->vg));
 }
 
 static PyObject *
@@ -590,7 +590,7 @@ liblvm_lvm_vg_get_extent_size(vgobject *self)
 {
 	VG_VALID(self);
 
-	return Py_BuildValue("l", lvm_vg_get_extent_size(self->vg));
+	return Py_BuildValue("K", (unsigned long long)lvm_vg_get_extent_size(self->vg));
 }
 
 static PyObject *
@@ -598,7 +598,7 @@ liblvm_lvm_vg_get_extent_count(vgobject *self)
 {
 	VG_VALID(self);
 
-	return Py_BuildValue("l", lvm_vg_get_extent_count(self->vg));
+	return Py_BuildValue("K", (unsigned long long)lvm_vg_get_extent_count(self->vg));
 }
 
 static PyObject *
@@ -606,7 +606,7 @@ liblvm_lvm_vg_get_free_extent_count(vgobject *self)
 {
 	VG_VALID(self);
 
-	return Py_BuildValue("l", lvm_vg_get_free_extent_count(self->vg));
+	return Py_BuildValue("K", (unsigned long long)lvm_vg_get_free_extent_count(self->vg));
 }
 
 /* Builds a python tuple ([string|number], bool) from a struct lvm_property_value */
@@ -757,7 +757,7 @@ liblvm_lvm_vg_get_pv_count(vgobject *self)
 {
 	VG_VALID(self);
 
-	return Py_BuildValue("l", lvm_vg_get_pv_count(self->vg));
+	return Py_BuildValue("K", (unsigned long long)lvm_vg_get_pv_count(self->vg));
 }
 
 static PyObject *
@@ -765,7 +765,7 @@ liblvm_lvm_vg_get_max_pv(vgobject *self)
 {
 	VG_VALID(self);
 
-	return Py_BuildValue("l", lvm_vg_get_max_pv(self->vg));
+	return Py_BuildValue("K", (unsigned long long)lvm_vg_get_max_pv(self->vg));
 }
 
 static PyObject *
@@ -773,7 +773,7 @@ liblvm_lvm_vg_get_max_lv(vgobject *self)
 {
 	VG_VALID(self);
 
-	return Py_BuildValue("l", lvm_vg_get_max_lv(self->vg));
+	return Py_BuildValue("K", (unsigned long long)lvm_vg_get_max_lv(self->vg));
 }
 
 static PyObject *
@@ -1135,7 +1135,7 @@ liblvm_lvm_lv_get_size(lvobject *self)
 {
 	LV_VALID(self);
 
-	return Py_BuildValue("l", lvm_lv_get_size(self->lv));
+	return Py_BuildValue("K", (unsigned long long)lvm_lv_get_size(self->lv));
 }
 
 static PyObject *
@@ -1348,7 +1348,7 @@ liblvm_lvm_pv_get_mda_count(pvobject *self)
 {
 	PV_VALID(self);
 
-	return Py_BuildValue("l", lvm_pv_get_mda_count(self->pv));
+	return Py_BuildValue("K", (unsigned long long)lvm_pv_get_mda_count(self->pv));
 }
 
 static PyObject *
@@ -1371,7 +1371,7 @@ liblvm_lvm_pv_get_dev_size(pvobject *self)
 {
 	PV_VALID(self);
 
-	return Py_BuildValue("l", lvm_pv_get_dev_size(self->pv));
+	return Py_BuildValue("K", (unsigned long long)lvm_pv_get_dev_size(self->pv));
 }
 
 static PyObject *
@@ -1379,7 +1379,7 @@ liblvm_lvm_pv_get_size(pvobject *self)
 {
 	PV_VALID(self);
 
-	return Py_BuildValue("l", lvm_pv_get_size(self->pv));
+	return Py_BuildValue("K", (unsigned long long)lvm_pv_get_size(self->pv));
 }
 
 static PyObject *
@@ -1387,7 +1387,7 @@ liblvm_lvm_pv_get_free(pvobject *self)
 {
 	PV_VALID(self);
 
-	return Py_BuildValue("l", lvm_pv_get_free(self->pv));
+	return Py_BuildValue("K", (unsigned long long)lvm_pv_get_free(self->pv));
 }
 
 static PyObject *
