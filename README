@@ -1,3 +1,13 @@
+NOTE: python-lvm has been merged into the main lvm2 git repo here:
+
+git://git.fedorahosted.org/git/lvm2.git
+
+Enable using "--enable-python_bindings" lvm2 configure option.
+
+This repo is no longer actively developed.
+
+--------------------
+
 This is a repo of Lars Sjostrom's python liblvm bindings, which I got from here:
 
 http://www.redhat.com/archives/lvm-devel/2011-January/msg00138.html
